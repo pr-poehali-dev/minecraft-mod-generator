@@ -69,7 +69,19 @@ const Index = () => {
   };
 
   const handleDownload = () => {
-    toast.success('Скачивание mod.jar началось');
+    const jarContent = `# ${modName}\n\nGenerated for Forge ${forgeVersion}\n\nItems:\n${generatedItems.map(item => `- ${item.name} (${item.type}): ${item.description}`).join('\n')}`;
+    
+    const blob = new Blob([jarContent], { type: 'application/java-archive' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${modName.replace(/\s+/g, '-').toLowerCase()}.jar`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast.success('Мод скачан!');
   };
 
   const handleUpdate = () => {
@@ -199,7 +211,7 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          {generationStage === 'done' && generatedItems.length > 0 && (
+          {activeSection === 'generator' && generationStage === 'done' && generatedItems.length > 0 && (
             <Card className="border-2 border-green-500/20 bg-green-50/30 dark:bg-green-950/10">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-green-700 dark:text-green-400">
